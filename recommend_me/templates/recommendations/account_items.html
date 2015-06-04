@@ -1,0 +1,70 @@
+{% extends 'recommendations/base.html' %}
+{% import 'recommendations/utils.html' as utils %}
+
+{% block title %}{% if user == current_user %}My collection{% else %}Collection of {{ user.name }}{% endif %} - {% endblock title %}
+
+{% block inner_content %}
+  <div class="resultInfo Pers">
+    <p>
+      <span>{% if user == current_user %}My{% else %}{{ user.first_name|d('User') }}'s{% endif %} {{ category }}</span>
+      {% for cat_name, action, items in item_groups -%}
+        <a href="#" data-cat="#user-cat-{{ cat_name }}" class="user-cat-link {% if loop.first %}active{% endif %}">{{ cat_name }} (<b>{{ items|length }}</b>)</a>
+        {% if not loop.last %}
+          <i></i>
+        {% endif %}
+      {%- endfor %}
+    </p>
+  </div>
+  <div id="results" class="listRes">
+    {% for cat_name, action, items in item_groups %}
+      <ul id="user-cat-{{ cat_name }}" class="resultList b-list-like user-cat" {% if not loop.first %}style="display:none"{% endif %}>
+        {% for item in items %}
+          {{ utils.render_list_item(item, reverse_url, category, is_my_profile, [action]) }}
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ super() }}
+  <script type="text/javascript" charset="utf-8">
+    $(function() {
+        {% for cat_name, action, items in item_groups -%}
+          {%- for item in items -%}
+            {%- if not item.info.details or item.info.details.parsed_version != PARSED_VERSION %}
+              recco.updateItemInfo('{{ item.info.id }}');
+            {% endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+        $('.account-items-group').click(function() {
+            var self = this;
+            $(this).parent().next('ul').slideToggle(function() {
+                $(self).parent().find('a.show-hide-button').toggle();
+            });
+            return false;
+        });
+        $('.b-form-like').submit(function() {
+            var self = this;
+            var data = $(this).serialize();
+            var action = $(this).attr('action');
+            var category = $(this).find('input[name=category]').val();
+            $.post(action, data, function(response) {
+                $(self).parent().parent().parent().fadeOut();
+                items_count_el = $(self).closest('ul').prev('h2').find('.items-count');
+                items_count_el.text(parseInt(items_count_el.text()) - 1);
+                recco.loadUserActivityFeed('{{ user.id }}', 0, '{{ category }}');
+            });
+            return false;
+        });
+        $(".user-cat-link").click(function() {
+            $('.user-cat').hide();
+            $($(this).attr('data-cat')).show();
+            $('.user-cat-link').removeClass('active');
+            $(this).addClass('active');
+            return false;
+        });
+        recco.loadUserActivityFeed('{{ user.id }}', 0, '{{ category }}');
+    });
+  </script>
+{% endblock %}

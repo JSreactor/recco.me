@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:fb="http://ogp.me/ns/fb#">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta property="og:title" content="Recco.me - recommendations based on common taste between you and your Facebook friends" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://recco.me/" />
+    <meta property="og:image" content="http://recco.me{{ static_url('images/favicon.png') }}" />
+    <meta property="og:site_name" content="Recco.me" />
+    <meta property="fb:admins" content="838827975" />
+    <meta name="description" content="Recco.me is a social network that provides recommendations based on common taste between you and your Facebook friends" />
+    <meta name="keywords" content="recommendations, facebook, social, friends, video, television, tv, show, shows, movie, movies, book, books, music, videos, game, games, video game, video games, popular" />
+    <title>Recommendations based on common taste between you and your Facebook friends | Recco.me</title>
+    <link rel="icon" href="{{ static_url('images/favicon.ico') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ static_url('css/screen.css') }}" type="text/css" media="screen">
+    <!--[if lt IE 9]><link rel="stylesheet" href="{{ static_url('css/ie.css') }}" type="text/css" media="screen"><![endif]-->
+  </head>
+  <body class="home">
+    <div id="global" class="simple-lt">
+      <div id="header">
+        <ul>
+          <li class="logo"><a href="{{ reverse_url('homepage') }}" title="home"><img src="{{ static_url('images/logo.png') }}" alt="" /></a></li>
+          <li class="sml"><a href="{{ reverse_url('website-how-it-works') }}" title="How it works">How it works</a></li>
+          <li class="lastLi"><a href="{{ reverse_url('auth-facebook') }}"><span>Sign up <i>or</i> Log in</span></a></li>
+        </ul>
+      </div>
+      <div class="promo">
+        <div class="blItem ">
+          <h1>Recco.me provides <span>recommendations</span> based on common taste between you and your <span>Facebook friends</span>.
+          </h1>
+          <ul class="how-it home">
+            <li>
+              <img src="{{ static_url('images/how1-s.png') }}" alt="" />
+              <h3><span>1</span>Looking what to watch/listen/read? Trust your friends’ choices?</h3>
+            </li>
+            <li>
+              <img src="{{ static_url('images/how2.png') }}" alt="" />
+              <h3><span>2</span>Ask your Facebook friends.</h3>
+            </li>
+            <li>
+              <img src="{{ static_url('images/how4.png') }}" alt="" />
+              <h3><span>3</span>Get most delicious recommendations and find them in iTunes or Amazon!</h3>
+            </li>
+          </ul>
+          <div class="sign-in">
+            <a href="{{ reverse_url('auth-facebook') }}"><span>Give me recommendations now!</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard socBtn">
+        <div class="fb-like" data-href="http://recco.me/" data-send="false" data-layout="button_count" data-width="450" data-show-faces="true" data-font="arial"></div>
+        
+        <a href="https://twitter.com/ReccoMe" class="twitter-follow-button" data-show-count="false">Follow @ReccoMe</a>
+
+        <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://recco.me" data-text="Recco.me - Recommendations based on common taste between you and your Facebook friends" data-related="ReccoMe">Tweet</a>
+
+        <div class="g-plusone" data-annotation="inline" data-href="http://recco.me/"></div>
+      </div>
+      <div id="footer">
+        <div>
+          © 2012 Recco.me, All rights reserved &nbsp;&nbsp;|&nbsp;&nbsp;<a href="/privacy-policy/">Privacy Policy</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/terms-of-service/">Terms of Service</a>
+          <p>
+            <a href="/how-it-works/">How it works</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="/about/">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a rel="nofollow" href="mailto:you@recco.me">Contact Us</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="http://recco.userrules.com/ ">Feedback</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- Scripts -->
+    <div id="fb-root"></div>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=283477691721049";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+    <script type="text/javascript">
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>
+
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-29505896-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+  </body>
+</html>

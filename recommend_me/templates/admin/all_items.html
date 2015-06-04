@@ -1,0 +1,139 @@
+{% extends "admin/base.html" %}
+{% block content %}
+  <form class="" action="{{ reverse_url('admin-items-merge', category) }}" method="post" accept-charset="utf-8">
+    <div id="search-panel" class="form-search well">
+      <input id="search-box" type="text" class="input-medium search-query">
+      <a class="btn" href="{{ reverse_url('admin-all-items', category) }}?skip={{ prev_skip }}">prev</a>
+      <a class="btn" href="{{ reverse_url('admin-all-items', category) }}?skip={{ next_skip }}">next</a>
+    </div>
+    <table id="results" class="table table-striped">
+      <thead>
+        <tr>
+          <th>*</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Likes</th>
+          <th>Facebook Page</th>
+          <th>Duplicates</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>
+              <input type="radio" name="target" value="{{ item.id }}" />
+              <input type="checkbox" name="source" value="{{ item.id }}" />
+            </td>
+            <td class="name"><a href="#">{{ item.name }}</a></td>
+            {% set image_url = "http://graph.facebook.com/%s/picture?type=large" % item.id %}
+            {# <td><img src="{{ image_url }}" style="height: 64px;"/></td> #}
+            <td>{{ item.id }}</td>
+            <td>
+              {% if 'details' in item %}
+                {{ item.details.likes }}
+              {% endif %}
+            </td>
+            <td>
+              {% if 'details' in item and 'link' in item.details %}
+                <a href="{{ item.details.link|default('') }}">Facebook Page</a>
+              {% endif %}
+            </td>
+            <td>
+              <ul>
+                {% for item_id in item.merges %}
+                  <li><a href="http://facebook.com/{{ item_id }}">{{ item_id }}</a></li>
+                {% endfor %}
+              </ul>
+            </td>
+            <td>
+              <a class="btn" href="{{ reverse_url('admin-item-delete', category, item.id) }}"><i class="icon-remove"></i> Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <input type="submit" class="btn btn-primary" value="Merge" />
+  </form>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+      $(function() {
+          $.xhrPool = [];
+          $.xhrPool.abortAll = function() {
+              $.each($.xhrPool, function(i, jqXHR) {
+                  jqXHR.abort();
+                  $.xhrPool.pop(i);
+              });
+          };
+          $.ajaxSetup({
+              beforeSend: function(jqXHR) {
+                  $.xhrPool.push(jqXHR);
+              }
+          });
+          $("#search-box").keyup(function () {
+              var q = $(this).val().toLowerCase();
+              if (q.length > 1) {
+                  $('#results tbody tr').remove();
+                  $.getJSON('/admin/items/{{ category }}/?q=' + q, function (response) {
+                      for (var i in response.items) {
+                          $.xhrPool.abortAll();
+                          var item = response.items[i];
+                          var tr = $('<tr></tr>');
+
+                          var td = $('<td></td>');
+                          $('<input type=radio name=target />').attr('value', item.id).appendTo(td);
+                          td.append(' ');
+                          $('<input type=checkbox name=source />').attr('value', item.id).appendTo(td);
+                          td.appendTo(tr);
+
+                          td = $('<td class="name"></td>');
+                          td.appendTo(tr);
+                          $('<a href="#"></a>').html(item.name).appendTo(td);
+                          td.appendTo(tr);
+
+                          $('<td></td>').html(item.id).appendTo(tr);
+
+                          var td_likes = $('<td></td>');
+                          var td_link = $('<td></td>');
+                          if (item.details !== undefined) {
+                              td_likes.html(item.details.likes?item.details.likes:'');
+
+                              if (item.details.link != undefined) {
+                                  $('<a>Facebook Page</a>').attr('href', item.details.link?item.details.link:'').appendTo(td_link);
+                              }
+                          }
+
+                          td_likes.appendTo(tr);
+                          td_link.appendTo(tr);
+
+                          var td_merges = $('<td></td>');
+                          var ul = $('<ul></ul>');
+                          for (var i in item.merges) {
+                              var merge_id = item.merges[i];
+                              $('<li><a href="http://facebook.com/' + merge_id + '">' +
+                                  merge_id + '</a></li>').appendTo(ul);
+                          }
+                          ul.appendTo(td_merges);
+                          td_merges.appendTo(tr);
+
+                          tr.appendTo($('#results tbody'));
+                          tr.append('<td><a class="btn" href="/admin/items/movies/delete/' + item.id + '/"><i class="icon-remove"></i> Delete</a></td>');
+                      }
+                  });
+              } else if (q.length == 0)
+                  window.location.href = window.location.href;
+              $('#results tr td.name').each(function () {
+                  
+              });
+          });
+          $('#results .name a').live('click', function () {
+              $("#search-box").val($(this).text());
+              $("#search-box").keyup();
+              return false;
+          });
+      });
+    </script>
+{% endblock %}

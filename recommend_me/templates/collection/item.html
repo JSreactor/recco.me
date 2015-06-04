@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% if not item.details or not item.details.image_large %}
+  {% set image_url = "http://graph.facebook.com/%s/picture?type=large" % item.id %}
+{% elif item.details.image_large %}
+  {% set image_url = item.details.image_large %}
+{% endif %}
+
+{% if not item.details or not item.details.image %}
+  {% set small_image_url = "http://graph.facebook.com/%s/picture?type=large" % item.id %}
+{% elif item.details.image %}
+  {% set small_image_url = item.details.image %}
+{% endif %}
+
+{% block extra_head %}
+  <meta property="og:title" content="{{ item.name }}" />
+  <meta property="og:url" content="http://recco.me{{ reverse_url('item-info', category, item.id) }}" />
+  <meta property="og:type" content="{{ og_type }}" />
+  <meta property="og:image" content="{{ image_url }}" />
+  <meta property="og:description" content="{{ item.details.description|striptags()|truncate(200)|e() }}" />
+{% endblock extra_head %}
+
+{% block title %}{{ item.name }} - {% endblock title %}
+
+{% block content %}
+  <div class="dashboard">
+    <div class="profile ">
+      <div class="movieDetail">
+        <h3>{{ item.name }}</h3>
+        <img src="{{ image_url }}" alt="{{ item.name }}">
+
+        <div class="like-dislike-hide">
+          {% if not is_liked %}
+            <form class="b-form-like" action="{{ reverse_url('item-like') }}" method="post" accept-charset="utf-8">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              {% if item.details and item.details.link %}
+                <input type="hidden" name="item_url" value="{{ item.details.link }}">
+              {% endif %}
+              <input type="hidden" name="category" value="{{ category }}">
+              <input type="hidden" name="item_{{ item.id}}_name" value="{{ item.name }}">
+              <button class="b-button b-button-like b-iblock" type="submit"><i class="b-button-icon b-button-icon__like"></i><span>Like</span></button>
+            </form>
+          {% endif %}
+          {% if not is_disliked %}
+            <form class="b-form-like" action="{{ reverse_url('item-dislike') }}" method="post" accept-charset="utf-8">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="category" value="{{ category }}">
+              <input type="hidden" name="item_{{ item.id}}_name" value="{{ item.name }}">
+              <button class="b-button b-button-like b-iblock" type="submit"><i class="b-button-icon b-button-icon__dislike"></i><span>Dislike</span></button>
+            </form>
+          {% endif %}
+          {% if not is_bookmarked %}
+            <form class="b-form-like" action="{{ reverse_url('item-bookmark') }}" method="post" accept-charset="utf-8">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="category" value="{{ category }}">
+              <input type="hidden" name="item_{{ item.id}}_name" value="{{ item.name }}">
+              <button class="b-button favor" type="submit"></button>
+            </form>
+          {% endif %}
+        </div>
+        {# <div id="stats">
+          <div><p>570</p><span class="title">Added to<br>favorites</span></div>
+          <div><p>{{ item.details.likes }}</p><span class="title">Facebook<br>likes</span></div>
+        </div> #}
+        <div class="fb-facepile" data-href="{{ item.details.link }}" data-width="220" data-max-rows="2"></div>
+        <div class="followers act">
+          <h4><span>Last</span> activities</h4>
+          <ul id="user-activity-feed"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="activity">
+      <ul class="wanna breadCrumbs">
+        <li class="iMovies">
+          <a href="{{ reverse_url('recommendations', item.category) }}"><span></span>{{ item.category|capitalize() }}</a>
+        </li>
+        <li class="empty"> <span> →</span>{{ item.name }}</li>
+      </ul>
+      <div id="add-form" class="b-content-form">
+        <div id="results">
+          <ul class="resultList dtl">
+            <li class="mn">
+              <div class="b-buy">
+                <h4>Buy now</h4>
+                {# <nav><a class="act" href="">1</a><a href="">2</a><a href="">3</a><a href="">4</a><a href="">5</a></nav> #}
+                {% for subitem in item.details.subitems %}
+                  <ul class="b-buy__list">
+                    <li class="b-buy_item_img">
+                      <p><img src="{{ subitem.image|default(small_image_url, true) }}"></p>
+                      <span>{{ subitem.title }}</span>
+                    </li>
+                    <li class="b-buy-where">
+                      {% if subitem.url %}
+                        <img alt="iTunes" src="{{ static_url('images/itunes.png') }}" style="width:22px">
+                        <a href="{{ subitem.url }}" title="iTunes">iTunes</a>
+                      {% endif %}
+                      {% if subitem.amazon_links %}
+                        {% for amazon_title, amazon_link in subitem.amazon_links.items() %}
+                          <a href="{{ amazon_link }}" title="{{ amazon_title }}">
+                            {% if amazon_title == 'Instant Video' %}
+                              <img alt="Amazon Instant Video" src="{{ static_url('images/aiv.png') }}" alt="{{ amazon_title}}">
+                            {% else %}
+                              <img alt="Amazon" src="{{ static_url('images/amazon.png') }}" alt="{{ amazon_title}}">
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                      {% endif %}
+                    </li>
+                    <li class="sep"></li>
+                  </ul>
+                {% endfor %}
+              </div>
+              <div class="infoCont b-iblock">
+                <div class="item-details b-description" style="display: block;"><p>{{ item.details.description|striptags()|truncate(1000) }}</p></div>
+                {% if youtube_embeded_link %}
+                  <div class="b-youtube-embeded">
+                    <iframe width="454" height="300" src="{{ youtube_embeded_link }}" frameborder="0" allowfullscreen></iframe>
+                  </div>
+                {% endif %}
+                <div class="b-tags__list">
+                  <span>tags</span>
+                  {% for tag in item.details.tags -%}
+                    {% if not loop.first %},{% endif %}
+                    <a href="#">{{ tag }}</a>
+                  {%- endfor %}
+                </div>
+                <ul class="b-description__list">
+                  {% for name, values in item.details.attributes.items() %}
+                    <li class="b-description__item">
+                      <span class="b-name-category b-iblock">{{ name }}</span>
+                      <span class="b-category b-iblock">
+                        {% for v in values -%}
+                          {% if not loop.first %},{% endif %}
+                          {{ v }}
+                        {%- endfor %}
+                      </span>
+                    </li>  
+                  {% endfor %}
+                </ul>
+                <div class="fb-comments" data-href="http://recco.me{{ reverse_url('item-info', category, item.id) }}" data-num-posts="5" data-width="455"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="popId" style="display:none">
+    <div class="promo">
+      <div class="blItem ">
+        <h1>Recco.me provides <span>recommendations</span> based on common taste between you and your <span>Facebook friends</span>.
+        </h1>
+        <ul class="how-it home">
+          <li>
+            <img src="{{ static_url('images/how1.png') }}" alt="">
+            <h3><span>1</span>Looking what to watch/listen/read? Trust your friends’ choices?</h3>
+          </li>
+          <li>
+            <img src="{{ static_url('images/how2.png') }}" alt="">
+            <h3><span>2</span>Ask your Facebook friends.</h3>
+          </li>
+          <li>
+            <img src="{{ static_url('images/how3.png') }}" alt="">
+            <h3><span>3</span>Get most delicious recommendations and find them in iTunes or Amazon!</h3>
+          </li>
+        </ul>
+        <div class="sign-in">
+          <a href="{{ reverse_url('auth-facebook') }}"><span>Sign up now!</span></a>
+          <a class="no-thanks" href="">No, thanks.</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% block extra_js %}
+  <script type="text/javascript" charset="utf-8">
+    $(function() {
+        CURRENT_USER_ID = '{{ current_user.id }}';
+        CURRENT_ITEM_ID = '{{ item.id }}';
+        CURRENT_CATEGORY = '{{ category }}';
+        recco.loadFriendsActivityFeed(CURRENT_USER_ID, CURRENT_ITEM_ID);
+        {% if not current_user.name %}
+          setTimeout(function () {
+            $('#popId').fadeIn();
+          }, 1500);
+          $('.no-thanks').click(function () {
+            $('#popId').fadeOut();
+            return false;
+          });
+        {% endif %}
+    });
+  </script>  
+{% endblock extra_js %}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+  <link href="{{ static_url('bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+  <link href="{{ static_url('bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
+  <link href="{{ static_url('css/admin.css') }}" rel="stylesheet">
+  {% block extra_head %}
+    
+  {% endblock %}
+</head>
+<body>
+  {% for message in get_flashed_messages() %}
+    <div class='alert alert-{{ message.category }}'>{{ message.message }}</div>
+  {% endfor %}
+  {% block content %}
+  {% endblock %}
+  <script type="text/javascript" src="{{ static_url('js/jquery.js') }}" charset="utf-8"></script>
+  {% block extra_js %}
+  {% endblock %}
+</body>
+</html>

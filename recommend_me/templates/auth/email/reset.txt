@@ -1,0 +1,5 @@
+Hello, {{ user.username }}
+
+You receive this e-mail because you or someone else wanted to reset your account's password.
+Follow the link below to reset your password:
+http://{{ hostname }}/auth/reset-password-complete/{{ key }}/

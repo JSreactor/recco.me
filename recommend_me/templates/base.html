@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <meta property="fb:app_id" content="283477691721049"/>
+  <meta property="og:site_name" content="Recco.me - recommendations based on common taste between you and your Facebook friends" />
+  <title>{% block title %}{% endblock title %}Recco.me</title>
+  <link rel="shortcut icon" href="{{ static_url('images/favicon.png') }}" type="image/x-icon" />
+  <link rel="icon" href="{{ static_url('images/favicon.ico') }}" type="image/x-icon" />
+  <link rel="stylesheet" href="{{ static_url('css/screen.css') }}" type="text/css" media="screen">
+  <!--[if lt IE 9]><link rel="stylesheet" href="{{ static_url('css/ie.css') }}" type="text/css" media="screen"><![endif]-->
+  {% block extra_head %}{% endblock extra_head %}
+</head>
+<body class="home">
+  <div id="global" class="{% block global_class %}{% endblock %}">
+    <div id="header">
+      <ul>
+        <li class="logo"><a href="/" title="home"><img src="{{ static_url('images/logo.png') }}" alt="recco.me"></a></li>
+        {% if current_user.name %}
+          <li class="sml">
+            <a class="prof" href="{{ reverse_url('user-items', current_user.id, 'movies') }}">
+              <img src="{{ current_user.picture }}"> {{ current_user.name }}
+            </a>
+          </li>
+          <li class="sml">|<a href="{{ reverse_url('website-how-it-works') }}" title="How it works">How it Works</a></li>
+          <li class="sml">|<a href="{{ reverse_url('auth-logout') }}" title="Logout">Logout</a></li>
+        {% else %}
+          <li><a href="{{ reverse_url('website-about') }}" title="About">About</a></li>
+          <li class="lastLi"><a href="{{ reverse_url('auth-facebook') }}"><span>Sign up <i>or</i> Log in</span></a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% block promo %}{% endblock promo %}
+    <ul id="messages">
+      {% for message in get_flashed_messages() %}
+        <li class='{{ message.category }}'>{{ message.message }}</li>
+      {% endfor %}
+    </ul>
+    <div id="content" class="promo">
+      {% block content %}{% endblock content %}
+    </div>
+    <div id="footer">
+      <div>
+        © 2012 Recco.me, All rights reserved &nbsp;&nbsp;|&nbsp;&nbsp;<a href="/privacy-policy/">Privacy Policy</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/terms-of-service/">Terms of Service</a>
+        <p>
+          <a href="/how-it-works/">How it works</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/about/">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a rel="nofollow" href="mailto:you@recco.me">Contact Us</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="http://recco.userrules.com/ ">Feedback</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=241921515858276";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <script type="text/javascript" src="{{ static_url('js/jquery.js') }}" charset="utf-8"></script>
+  <script type="text/javascript" src="{{ static_url('js/jquery.timeago.js') }}" charset="utf-8"></script>
+  <script type="text/javascript" src="{{ static_url('js/recco.js') }}" charset="utf-8"></script>
+  {% block extra_js %}{% endblock extra_js %}
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29505896-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+  {# userrules widget integration #}
+  <script type="text/javascript">
+    var _usrp = {
+      type: "button",
+      company: "recco",
+      host: "recco.userrules.com",
+      mode: "advanced",
+      sso: {},
+      getVisitorId: function() {return "";},
+      getAdditionalParams: function() {return "";},
+      placement: "left",
+      color: ["#32312E", "#62615E"]
+    };
+
+    (function(D) {
+      var _usr = D.createElement("script"), s = D.getElementsByTagName("script")[0];
+      _usr.type = "text/javascript"; _usr.async = true;
+      _usr.src = ("https:" == D.location.protocol ? "https" : "http" ) + "://dtkm4pd19nw6z.cloudfront.net/js/userrules/9a41a826e957127b4e5bfc7d140e45c4/feedback.canary.js";
+      s.parentNode.insertBefore(_usr, s);
+    })(document);
+  </script>
+</body>
+</html>
+{% if environment == 'test' %}
+    ==DEBUGINFO=={{ debug.context_pickled }}==DEBUGINFO==
+{%- endif %}

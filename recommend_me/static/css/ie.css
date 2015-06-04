@@ -1,0 +1,42 @@
+#header {background:#222}
+.listRes {width:100%; overflow:hidden}
+.resultList {width:105%; margin-right:-5%}
+
+.resultInfo p a:hover
+ {    color:#222
+}
+
+.infoCont .invite.ignore {
+    padding: 0 0 0 1px;
+	height: 15px;
+	 width: 15px;
+	 display:block !important; zoom:1;
+	 float:right; position: relative !important; z-index:9999 !important;
+}
+
+.b-buy {
+	background:  #333;
+}
+
+.resultList.dtl li.b-buy_item_img span {color:#eee; padding-top:15px}
+.resultList.dtl li.b-buy-where a {font-weight:bold; color:#fff}
+.Amazon img {background:#fff; padding-top:3px}
+.similar-block div, .b-form-like{
+display:block;
+float:left
+}
+
+#fb-root{
+overflow:hidden; display:none
+}
+
+.activity h1 span {line-height:40px; margin-top:-10px}
+
+#footer div p {margin:-20px 0 0 700px; float:none}
+
+.dashboard {margin-top:60px}
+.promo {padding-top:0 !important; margin-top:0 !important}
+
+.b-description__list li {width:460px !important; border-bottom:1px solid #ddd}
+.similar-block div {margin:1px}
+.similar-block div p {background:#222; left:-25%}

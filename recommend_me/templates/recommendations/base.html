@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="dashboard">
+    <div class="profile">
+      {% if user %}
+        {% set current_profile = user %}
+      {% else %}
+        {% set current_profile = current_user %}
+      {% endif %}
+      <h3><a href="#">{{ current_profile.name }}</a></h3>
+      <p class="prPosition"></p>
+      <a href=""><img src="http://graph.facebook.com/{{ current_profile.id }}/picture?type=large" alt=""></a>
+      {% if current_profile %}
+        <ul class="rcmd">
+          <li class="iMovies {% if category == 'movies' and user %}act{% endif %}"> <a href="{{ reverse_url('user-items', current_profile.id, 'movies') }}"><span> </span>{{ current_profile.get('items_count', {}).get('movies', 0) }} movies</a></li>
+          <li class="iMusics {% if category == 'music' and user %}act{% endif %}"> <a href="{{ reverse_url('user-items', current_profile.id, 'music') }}"><span></span>{{ current_profile.get('items_count', {}).get('music', 0) }} music</a></li>
+          <li class="iBooks {% if category == 'books' and user %}act{% endif %}"> <a href="{{ reverse_url('user-items', current_profile.id, 'books') }}"><span></span>{{ current_profile.get('items_count', {}).get('books', 0) }} books</a></li>
+          <li class="iTVs {% if category == 'television' and user %}act{% endif %}"> <a href="{{ reverse_url('user-items', current_profile.id, 'television') }}"><span></span>{{ current_profile.get('items_count', {}).get('television', 0) }} TV</a></li>
+          <li class="iGames {% if category == 'games' and user %}act{% endif %}"> <a href="{{ reverse_url('user-items', current_profile.id, 'games') }}"><span></span>{{ current_profile.get('items_count', {}).get('games', 0) }} games</a></li>
+        </ul>
+      {% endif %}
+      <p class="prLinks"><a href=""><span>{{ current_profile.friends_count }}</span> friends</a></p>
+      <div class="followers act">
+        <h4><span>Last</span> activities</h4>
+        <ul id="user-activity-feed"></ul>
+      </div>
+    </div>
+    <div class="activity">
+      {% block inner_content %}{% endblock %}
+    </div>
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  <script type="text/javascript">
+    $(function() {
+        CURRENT_USER_ID = '{{ current_user.id }}';
+        $("abbr.timeago").timeago();
+    });
+  </script>  
+{% endblock extra_js %}

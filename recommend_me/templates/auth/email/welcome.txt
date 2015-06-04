@@ -1,0 +1,12 @@
+Welcome!
+
+You have created account! Here is your account info:
+
+Username: {{ user.username }}
+{% if password -%}
+  Password: {{ password }}
+{%- endif %}
+E-mail: {{ user.email }}
+{% if not user.trusted_email %}
+Past link below to your browser to confirm e-mail: http://{{ host }}/auth/confirm-email/{{ user.confirmation_key }}/
+{% endif %}

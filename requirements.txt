@@ -1,0 +1,12 @@
+tornado
+jinja2
+sphinx
+pycurl
+pymongo>=1.9
+WTForms
+-e git+http://github.com/ctb/twill.git#egg=twill
+-e git+https://github.com/ceymard/asyncmongo.git#egg=asyncmongo
+#-e git://github.com/bitly/asyncmongo.git#egg=asyncmongo
+tornadomail
+-e git+https://github.com/MrJoes/tornadio2.git#egg=tornadio2
+python-dateutil==1.5

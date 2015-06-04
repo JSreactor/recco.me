@@ -1,0 +1,133 @@
+{% extends 'recommendations/base.html' %}
+{% import 'recommendations/utils.html' as utils %}
+
+{% block title %}Recommendations -{% endblock title %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ static_url('css/ui-lightness/jquery-ui-1.8.16.custom.css') }}">
+{% endblock extra_head %}
+{% block inner_content %}
+  <h1><span>I wanna:</span></h1>
+  <ul class="wanna">
+    <li class="sep">·</li>
+    <li class="iMovies {% if category == 'movies' %}act{% endif %}">
+      <a href="{{ reverse_url('recommendations', 'movies') }}"><span></span> Movies</a></li>
+    <li class="sep">·</li>
+    <li class="iMusics {% if category == 'music' %}act{% endif %}"> <a href="{{ reverse_url('recommendations', 'music') }}"><span></span> Music</a></li>
+    <li class="sep">·</li>
+    <li class="iBooks {% if category == 'books' %}act{% endif %}"> <a href="{{ reverse_url('recommendations', 'books') }}"><span></span> Books</a></li>
+    <li class="sep">·</li>
+    <li class="iTVs {% if category == 'television' %}act{% endif %}"> <a href="{{ reverse_url('recommendations', 'television') }}"><span></span> TV</a></li>
+    <li class="sep">·</li>
+    <li class="iGames {% if category == 'games' %}act{% endif %}"> <a href="{{ reverse_url('recommendations', 'games') }}"><span></span> Games</a></li>
+  </ul>
+  <div id="reloader" style="display:none"><a href=".">reload</a></div>
+  <div id="add-form" class="b-content-form">
+    <div class="b-form">
+      <p class="b-form-message">Add things you like here</p>
+      <form action="/like/" method="post" accept-charset="utf-8">
+        <input type="hidden" name="category" value="{{ category }}">
+        <div class="b-form-block">
+          <div class="b-form-category b-iblock"><label for="id-autocomplete">{{ category }}</label></div>
+          <div class="b-form-input b-iblock"><input id="id-autocomplete" type="text" placeholder="What {{ category }} do you like?">
+          </div>
+        </div>
+        <ul id="autocomplete-items">
+        </ul>
+        <div class="b-form-block">
+          <div class="b-form-category b-iblock">&nbsp;</div>
+          <div class="b-form-input b-iblock"><button class="b-button b-button-save b-iblock" type="submit"><span>Save</span></button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="results" class="listRes">
+    <div class="resultInfo" {% if not items_count %}style="display:none"{% endif %}>
+      <p>
+        <a href="{{ reverse_url('recommendations', category) }}?friends_only={% if friends_only %}1{% endif %}" class="{% if not tag %}active{% endif %}" >all {{ category }}</a><i></i>
+        <select id="tags-select">
+          <option value="">All tags</option>
+          {% for t in tags %}
+            <option value="{{ t }}" {% if t == tag %}selected=selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </p>
+      <span id="recommended-items-count">{{ items_count }}</span>
+      <p style="float:right">
+        <a href="?friends_only=1" class="{% if friends_only %}active{% endif %}">friends only</a><i></i><a href="." class="{% if not friends_only %}active{% endif %}">friends of friends</a>
+      </p>
+    </div>
+    <div class="no-results-message" style="{% if items_count or need_update %}display:none{% endif %}">
+      <p>Unfortunately we have not enought for personalised recommendation. Showing you most popular items</p>
+      <p>Here is how you can improve situation:</p>
+      <ul>
+        <li>Rate more items, so we will better know your tastes</li>
+        <li>Invite more friends to recco.me, so you'll have more items to choose</li>
+      </ul>
+    </div>
+    <div id="update-progress-bar" class="progressBar" style="display:none"><span>0%</span></div>
+    <div id="update-progress-status" style="display:none"></div>
+    <ul class="resultList">
+      {% for item in items %}
+        {{ utils.render_list_item(item, reverse_url, category) }}
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ static_url('js/socket.io.js') }}" charset="utf-8"></script>
+  <script type="text/javascript" src="{{ static_url('js/jquery-ui-1.8.16.custom.min.js') }}" charset="utf-8"></script>
+  <script type="text/javascript">
+    WEB_SOCKET_SWF_LOCATION = '{{ static_url("WebSocketMain.swf") }}';
+    SOCKET_IO_PORT = {{ socket_io_port }};
+    CURRENT_CATEGORY = '{{ category }}';
+    CURRENT_TAG = {% if tag %}'{{ tag }}'{% else %}''{% endif %};
+    PARSED_VERSION = {{ PARSED_VERSION }};
+    {% if friends_only %}
+      FRIENDS_ONLY = '1';
+    {% else %}
+      FRIENDS_ONLY = '';
+    {% endif %}
+    recco.currentItemsCount = {{ items|length }};
+    $(function() {
+      {% if need_update %}
+        recco.updateProfileFull(CURRENT_CATEGORY, CURRENT_TAG);
+      {% endif %}
+      {%- for item in items -%}
+        {%- if not item.info.details or item.info.details.parsed_version != PARSED_VERSION %}
+          recco.updateItemInfo('{{ item.info.id }}');
+        {% endif -%}
+      {%- endfor -%}
+      $('#tags-select').change(function() {
+          window.location.href = '/' + CURRENT_CATEGORY + '/?friends_only=' + FRIENDS_ONLY + 
+              '&tag=' + $(this).val();
+      });
+      $('.infoCont form').live('submit', function() {
+          var self = this;
+          var data = $(this).serialize();
+          var action = $(this).attr('action');
+          var category = $(this).find('input[name=category]').val();
+          $.ajax({
+              url: action,
+              type: "POST",
+              data: data,
+              dataType: "json",
+              success: function(response) {
+                  if (response && response.status == 'ok') {
+                      $(self).closest('li').remove();
+                      $('#reloader').show();
+                      recco.loadFriendsActivityFeed(0, 0, CURRENT_CATEGORY);
+                  }
+              }
+          });
+          return false;
+      });
+      recco.addAutocomplete($('#id-autocomplete'), CURRENT_CATEGORY);
+      recco.infinityScroller(function(callback) {
+          recco.moreRecommendations(CURRENT_CATEGORY, CURRENT_TAG, callback);
+      });
+      recco.loadFriendsActivityFeed(CURRENT_USER_ID, 0, '{{ category }}');
+    });
+  </script>
+{% endblock extra_js %}

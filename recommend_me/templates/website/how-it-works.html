@@ -1,0 +1,32 @@
+{% extends 'website/base.html' %}
+
+{% block global_class %}{% endblock %}
+
+{% block title %}About - {% endblock title %}
+{% block content %}
+  <div class="dashboard content-page how-it-works">
+    <h1>How it works</h1>
+    <ul class="how-it">
+      <li style="border-top:0">
+        <img src="{{ static_url('images/how1.png') }}" alt="" />
+        <h3><span>1</span>Looking what to watch/listen/read? Trust your friends’ choices?</h3>
+        <p>Don’t know what film to watch, what music to listen or what book to read? Trust your  best friends taste?  With Recco.me we suggest you the most interesting and tasty recommendations.</p></li>
+      <li class="rImg">
+        <img src="{{ static_url('images/how2.png') }}" alt="" />
+        <h3><span>2</span>Recco.me gives you recommendations based on common taste between you and your Facebook friends.</h3>
+        <p>We analyze your facebook profile, what you prefer and preferences of your friends. Basing on general taste we suggest the most interesting and relevant information.</p></li>
+      <li>
+        <img src="{{ static_url('images/how3.png') }}" alt="" />
+        <h3><span>3</span>More likes - more relevant recommendations</h3>
+        <p>To get more recommendations just rate few items (7+) or fill your preferences in Facebook profile. More items you will rate - more worthiness recommendations will be.</p></li>
+      <li class="rImg">
+        <img src="{{ static_url('images/how4.png') }}" alt="" />
+        <h3><span>4</span>Get the most delicious recommendations from your friends and easily find them in iTunes or Amazon</h3>
+        <p>Get detailed information about each item including description, video trailer, comments of your friends and even more. Make a right decision and buy it by one click from iTunes or Amazon.</p></li>
+      <li style="border-bottom:0">
+        <img src="{{ static_url('images/how5.png') }}" alt="" />
+        <h3><span>5</span>See your interests and interests of others</h3>
+        <p>See what your friend likes, dislike and planning to try and adjust your interests. e what your friend likes, dislike and planning to try and adjust your interests. e what your friend likes, dislike and planning to try and adjust your interests.</p></li>
+    </ul>
+  </div>
+{% endblock content %}
